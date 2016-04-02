@@ -1,0 +1,193 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Recherche dans fablab{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<link rel="stylesheet" href="{{ asset('css/search.css') }}" />
+<link rel="stylesheet" href="{{ asset('css/vendor/autocomplete/easy-autocomplete.min.css') }}" >
+<link rel="stylesheet" href="{{ asset('css/vendor/autocomplete/easy-autocomplete.themes.min.css') }}" >
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+{% endblock stylesheets %}
+
+
+{% block body %}
+
+<div class="container" style="margin-top:50px;">
+
+  <div class="col-lg-3" style="margin-top:50px;">
+    <div id="filters">
+      <h3>Filtres</h3>
+      <div class="filterblock">
+        <input id="check4" type="checkbox" name="check" value="projet" class="category" {% if result_project|length > 0 %}checked{% endif %}>
+        <label for="check4"> Projet <span class="resultcountsmall">({{ result_project|length }})</span></label>
+      </div>
+      <div class="filterblock">
+        <input id="check1" type="checkbox" name="check" value="machine" class="category" {% if result_machine|length > 0 %}checked{% endif %}>
+        <label for="check1"> Machine <span class="resultcountsmall">({{ result_machine|length }})</span></label>
+      </div>
+      <div class="filterblock">
+        <input id="check3" type="checkbox" name="check" value="competence" class="category" {% if result_competence|length > 0 %}checked{% endif %}>
+        <label for="check3"> Compétence  <span class="resultcountsmall">({{ result_competence|length }})</span></label>
+      </div>
+      <div class="filterblock">
+        <input id="check2" type="checkbox" name="check" value="user" class="category" {% if result_user|length > 0 %}checked{% endif %}>
+        <label for="check2"> Utilisateur <span class="resultcountsmall">({{ result_user|length }})</span></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="results">
+      {% if search is null %}
+      <h4 style="margin-top:50px">Aucun résultat</h4>
+      {% else %}
+
+      <div class="result" data-tag="projet">
+
+
+        {% if result_project|length > 0 %}
+
+        <h3><i class="fa fa-bar-chart" style="color:#F5A623"></i> Projets  <span class="resultcount"> {{ result_project|length }} {% if result_project|length == 1 %}résultat{% else %}résultats{% endif %}</span></h3>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+
+
+            {% for project in result_project %}
+            <a href="{{ path('project_show', {'projectId': project.id}) }}">
+              <div class="col-lg-7">
+                <h4>{{ project.name }}</h4>
+                {% if project.summary is defined %}
+                <p>{{ project.summary }}</p>
+                {% endif %}
+              </div>
+              <div class="col-lg-5">
+                <h5 class="right" style="color:grey; opacity:0.5"> Créé le {{ project.date_begin }}
+                 </h5>
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% else %}
+        {% endif %}
+      </div>
+
+      <div class="result" data-tag="competence">
+
+        {% if result_competence|length > 0 %}
+        <h3> <i class="fa fa-graduation-cap" style="color:#5EAB08"></i> Compétences <span class="resultcount"> {{ result_competence|length }} {% if result_competence|length == 1 %}résultat{% else %}résultats{% endif %}</span></h3>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            {% for competence in result_competence %}
+            <a href="{{ path('project_show', {'projectId': competence.id}) }}">
+              <h4 class="col-lg-9">{{ competence.name }}</h4>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% else %}
+        {% endif %}
+      </div>
+
+
+      <div class="result" data-tag="machine">
+        {% if result_machine|length > 0 %}
+        <h3> <i class="fa fa-cogs" style="color:#607D8B"></i> Machines <span class="resultcount"> {{ result_machine|length }} {% if result_machine|length == 1 %}résultat{% else %}résultats{% endif %}</span></h3>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            {% for machine in result_machine %}
+            <a href="{{ path('centrale_lille_view_resource', {'resourceType': 'machine', 'id': machine.id}) }}">
+              <div class="col-lg-9">
+                <h4 class="left">{{ machine.name }}</h4>
+              </div>
+              <div class="col-lg-3">
+                {% if machine.statut == "Disponible" %}
+                  <h5 class="right" style="color:#5EAB08">Disponible</h5>
+                {% else %}
+                  <h5 class="right" style="color:red">{{ machine.statut }}</h5>
+                {% endif %}
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% else %}
+
+        {% endif %}
+      </div>
+
+
+
+      <div class="result" data-tag="user">
+
+        {% if result_user|length > 0 %}
+
+        <h3> <i class="fa fa-user" style="color:#4A90E2"></i> Utilisateurs <span class="resultcount"> {{ result_user|length }} {% if result_user|length == 1 %}résultat{% else %}résultats{% endif %}</span></h3>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            {% for user in result_user %}
+            <a href="#">
+              <h4 class="col-lg-9">{{ user.username }}</h4>
+              <p class="col-lg-9">{{ user.email }}</p>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+
+
+        {% else %}
+        {% endif %}
+      </div>
+
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-lg-3">
+  </div>
+
+</div>
+
+{#<script src="{{ asset('js/vendor/autocomplete/jquery.easy-autocomplete.min.js') }}"></script>
+<script src="{{ path('js_search') }}"></script>#}
+<script type="text/javascript">
+var category_list = [];
+$('#filters :input:checked').each(function(){
+  var category = $(this).val();
+  category_list.push(category);//Push each check item's value into an array
+});
+
+$('.result').each(function(){
+  var item = $(this).attr('data-tag');
+  if(jQuery.inArray(item,category_list) > -1)//Check if data-tag's value exist in array
+  $(this).fadeIn('slow');
+  else
+  $(this).hide();
+});
+
+$(document).ready(function(){
+  $('.category').on('change', function(){
+    var category_list = [];
+    $('#filters :input:checked').each(function(){
+      var category = $(this).val();
+      category_list.push(category); //Push each check item's value into an array
+    });
+
+    if(category_list.length == 0)
+    $('.result').fadeIn();
+    else {
+      $('.result').each(function(){
+        var item = $(this).attr('data-tag');
+        if(jQuery.inArray(item,category_list) > -1) //Check if data-tag's value is in array
+        $(this).fadeIn('slow');
+
+        else
+        $(this).hide();
+      });
+
+    }});
+  });
+  </script>
+{% endblock body %}

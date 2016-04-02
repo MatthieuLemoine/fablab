@@ -8,7 +8,6 @@
 
 namespace CentraleLille\GdpBundle\Controller;
 
-
 use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -21,7 +20,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use Symfony\Component\Validator\ConstraintViolationList;
 
-class ProjectController extends FOSRestController
+class ProjectController extends GdpRestController
 {
     /**
      * Return the overall project list.
@@ -47,6 +46,35 @@ class ProjectController extends FOSRestController
         }
         $view = View::create();
         $view->setData($list)->setStatusCode(200);
+        return $view;
+    }
+
+    /**
+     * Return the project with the indicated id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Return the project",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when no projects are found"
+     *   }
+     * )
+     *
+     * @param int $id id
+     *
+     * @return View
+     */
+    public function getProjectAction($id)
+    {
+        $projectRepository = $this->getDoctrine()->getRepository('CustomFosUserBundle:Project');
+        $project = $projectRepository->find($id);
+        $this->existsProjectUser($id, $this->getUser()->getId());
+        if (!$project) {
+            throw $this->createNotFoundException('Data not found.');
+        }
+        $view = View::create();
+        $view->setData($project)->setStatusCode(200);
         return $view;
     }
 }

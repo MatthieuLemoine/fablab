@@ -18,12 +18,21 @@ const DEST_BASEDIR = "web/gdp/";
 /* Vendor JS files are compiled and resolved by browserify */
 
 var vendorJS = [
-    './node_modules/angular/angular.js',
+    './node_modules/angular/angular.min.js',
     './node_modules/angular-ui-router/release/angular-ui-router.min.js',
     './node_modules/angular-cookies/angular-cookies.min.js',
     './node_modules/angular-sanitize/angular-sanitize.min.js',
-    './static/vendor/datejs-fr-FR.js'
+    './node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',
+    './node_modules/angular-toastr/dist/angular-toastr.tpls.min.js',
+    './node_modules/angular-draganddrop/angular-draganddrop.min.js',
+    './static/vendor/date-fr-FR.js'
 ];
+
+var vendorCSS = [
+    './node_modules/angular-toastr/dist/angular-toastr.min.css',
+    //'./node_modules/bootstrap/dist/css/bootstrap.min.css'
+]
+
 
 gulp.task('scripts', function() {
     var opts= {entries: SRC_BASEDIR+'app.js',transform: ['bulkify']}
@@ -56,6 +65,13 @@ gulp.task('styles', function() {
         .pipe(gulp.dest(DEST_BASEDIR))
 })
 
+gulp.task('vendorCSS',function() {
+    gulp.src(vendorCSS)
+        .pipe(concat('vendor.css'))
+        .pipe(minifyCSS())
+        .pipe(gulp.dest(DEST_BASEDIR))
+})
+
 gulp.task('html', function() {
     gulp.src(SRC_BASEDIR+"index.html")
         .pipe(gulp.dest(DEST_BASEDIR))
@@ -64,8 +80,14 @@ gulp.task('html', function() {
         .pipe(gulp.dest(DEST_BASEDIR+"views/"))
 })
 
+gulp.task('fonts', function() {
+    gulp.src('./node_modules/bootstrap/fonts/**/*')
+        .pipe(gulp.dest('web/fonts/'))
+})
+
+
 gulp.task('default', function() {
-    gulp.run('vendorJS', 'scripts', 'styles', 'html');
+    gulp.run('vendorJS', 'scripts', 'styles', 'html','vendorCSS','fonts');
 
     gulp.watch(SRC_BASEDIR+"**/*.js", ['scripts'])
     gulp.watch(SRC_BASEDIR+"styles/**", ['styles'])

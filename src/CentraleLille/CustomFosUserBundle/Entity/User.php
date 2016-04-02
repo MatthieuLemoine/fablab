@@ -10,8 +10,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * @ORM\Entity(repositoryClass="CentraleLille\CustomFosUserBundle\Repository\UserRepository")
  * @ORM\Table(name="fos_user")
+ * @ORM\HasLifecycleCallbacks
  */
-class User extends BaseUser implements ProjectableInterface
+
+class User extends BaseUser implements ProjectableUserInterface
 {
 
     /**
@@ -23,13 +25,13 @@ class User extends BaseUser implements ProjectableInterface
 
     /**
      * @var string
-     * @ORM\Column(name="firstname", type="string", length=255)
+     * @ORM\Column(name="firstname", type="string", length=255, nullable=true)
      */
     protected $firstname;
 
     /**
      * @var string
-     * @ORM\Column(name="lastname", type="string", length=255)
+     * @ORM\Column(name="lastname", type="string", length=255, nullable=true)
      */
     protected $lastname;
 
